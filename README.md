@@ -110,14 +110,20 @@ validation: 513x513 center crop
 |  Model          | Batch Size  | FLOPs  | train/val OS   |  mIoU        | Dropbox  | Tencent Weiyun  | 
 | :--------        | :-------------: | :----:   | :-----------: | :--------: | :--------: | :----:   |
 | DeepLabV3-MobileNet       | 16      |  6.0G      |   16/16  |  0.701     |    [Download](https://www.dropbox.com/s/uhksxwfcim3nkpo/best_deeplabv3_mobilenet_voc_os16.pth?dl=0)       | [Download](https://share.weiyun.com/A4ubD1DD) |
-### 2. Performance on Cityscapes (19 classes, 1024 x 2048)
+### 2. Performance on Kitti-Road Datset
+| Metric               | Value  |
+|----------------------|--------|
+| Class 0 IoU         | 0.5848 |
+| Class 1 IoU         | 0.9935 |
+| Mean IoU            | 0.8545 |
+| Pixel Accuracy      | 0.9937 |
+| Mean Pixel Accuracy | 0.8943 |
 
-Training: 768x768 random crop  
-validation: 1024x2048
 
-|  Model          | Batch Size  | FLOPs  | train/val OS   |  mIoU        | Dropbox  |  Tencent Weiyun  |
-| :--------        | :-------------: | :----:   | :-----------: | :--------: | :--------: |  :----:   |
-| DeepLabV3Plus-MobileNet   | 16      |  135G      |  16/16   |  0.721  |    [Download](https://www.dropbox.com/s/753ojyvsh3vdjol/best_deeplabv3plus_mobilenet_cityscapes_os16.pth?dl=0) | [Download](https://share.weiyun.com/aSKjdpbL) 
+
+|  Model          | Batch Size  | train/val OS   |  mIoU        | Dropbox  |  Tencent Weiyun  |
+| :--------        | :-------------: | :-----------: | :--------: | :--------: |  :----:   |
+| DeepLabV3Plus-MobileNet   | 16      |  16/16   |  0.8545  |    [Download](https://www.dropbox.com/s/753ojyvsh3vdjol/best_deeplabv3plus_mobilenet_cityscapes_os16.pth?dl=0) | [Download](https://share.weiyun.com/aSKjdpbL) 
 
 #### Segmentation Results on Kitti Road Dataset (DeepLabv3Plus-MobileNet)
 ![image](https://github.com/user-attachments/assets/8c299488-60ff-4b74-959b-cd87fec84f7e)
