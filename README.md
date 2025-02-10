@@ -1,7 +1,7 @@
 # Semantic-Segmentation-using-Advanced-Deep-Learning-Model-s
 Semantic segmentation is a fundamental task in computer vision ,In this repository we will explore through Advanced model Architectures
 
-# DeepLabv3_MobileNet-Pytorch
+# 1. DeepLabv3_MobileNet-Pytorch
 
 Pretrained DeepLabv3 for Kitto Road Datset.
 
