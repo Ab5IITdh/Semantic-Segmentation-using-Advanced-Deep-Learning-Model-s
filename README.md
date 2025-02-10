@@ -120,15 +120,8 @@ validation: 1024x2048
 | DeepLabV3Plus-MobileNet   | 16      |  135G      |  16/16   |  0.721  |    [Download](https://www.dropbox.com/s/753ojyvsh3vdjol/best_deeplabv3plus_mobilenet_cityscapes_os16.pth?dl=0) | [Download](https://share.weiyun.com/aSKjdpbL) 
 
 #### Segmentation Results on Kitti Road Dataset (DeepLabv3Plus-MobileNet)
+![image](https://github.com/user-attachments/assets/8c299488-60ff-4b74-959b-cd87fec84f7e)
 
-<div>
-<img src="![image](https://github.com/user-attachments/assets/9f3a12f3-a4ea-4b26-bf78-d51d11d13f98)"   width="45%">
-</div>
-
-<div>
-<img src="samples/city_6_target.png"   width="45%">
-<img src="samples/city_6_overlay.png"  width="45%">
-</div>
 
 ### 2. Prepare Datasets
 
