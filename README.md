@@ -21,11 +21,50 @@ Download pretrained models: [Dropbox](https://www.dropbox.com/sh/w3z9z8lqpi8b2w7
 
 ### 2. Visualize segmentation outputs:
 ```python
-outputs = model(images)
-preds = outputs.max(1)[1].detach().cpu().numpy()
-colorized_preds = val_dst.decode_target(preds).astype('uint8') # To RGB images, (N, H, W, 3), ranged 0~255, numpy array
-# Do whatever you like here with the colorized segmentation maps
-colorized_preds = Image.fromarray(colorized_preds[0]) # to PIL Image
+def visualize_samples(dataset, num_samples=3):
+    """Display a few samples from the dataset with an overlay of the segmentation mask."""
+    for i in range(num_samples):
+        image, mask = dataset[i]
+        
+        # Convert image tensor (C, H, W) to a NumPy array (H, W, C) and de-normalize.
+        image_np = image.numpy().transpose(1, 2, 0)
+        image_np = image_np * np.array([0.229, 0.224, 0.225]) + np.array([0.485, 0.456, 0.406])
+        image_np = np.clip(image_np, 0, 1)
+        
+        # Convert mask tensor to NumPy array.
+        mask_np = mask.numpy()
+        
+        # Create an overlay: highlight road pixels (mask == 1) in red.
+        overlay = image_np.copy()
+        # Define the color for road (red) and the transparency factor.
+        road_color = np.array([1, 0, 0])  # Red in normalized RGB.
+        alpha = 0.5  # Transparency factor.
+        # For each pixel where mask==1, blend the original image with the red color.
+        overlay[mask_np == 1] = (1 - alpha) * overlay[mask_np == 1] + alpha * road_color
+        
+        # Plot the original image, the binary mask (with a colormap), and the overlay.
+        plt.figure(figsize=(15, 5))
+        
+        plt.subplot(1, 3, 1)
+        plt.imshow(image_np)
+        plt.title('Original Image')
+        plt.axis('off')
+        
+        plt.subplot(1, 3, 2)
+        # Using a colormap like 'viridis' to better highlight differences.
+        plt.imshow(mask_np, cmap='viridis')
+        plt.title('Segmentation Mask')
+        plt.axis('off')
+        
+        plt.subplot(1, 3, 3)
+        plt.imshow(overlay)
+        plt.title('Overlay')
+        plt.axis('off')
+        
+        plt.show()
+
+# Visualize a few training samples.
+visualize_samples(train_dataset, num_samples=3)
 ```
 
 Image folder:
@@ -39,15 +78,25 @@ Please refer to [this commit (Xception)](https://github.com/VainF/DeepLabV3Plus-
 
 ### 4. New datasets
 
-You can train deeplab models on your own datasets. Your ``torch.utils.data.Dataset`` should provide a decoding method that transforms your predictions to colorized images, just like the [VOC Dataset](https://github.com/VainF/DeepLabV3Plus-Pytorch/blob/bfe01d5fca5b6bb648e162d522eed1a9a8b324cb/datasets/voc.py#L156):
+You can train deeplab models on your own datasets. Your ``torch.utils.data.Dataset`` should provide a decoding method that transforms your predictions to colorized images:
 ```python
+#  Augmentations
+transform = A.Compose([
+    A.Resize(256, 256),
+    A.HorizontalFlip(p=0.5),
+    A.RandomBrightnessContrast(p=0.2),
+    A.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+    ToTensorV2(),
+],is_check_shapes=False)
 
-class MyDataset(data.Dataset):
-    ...
-    @classmethod
-    def decode_target(cls, mask):
-        """decode semantic mask to RGB image"""
-        return cls.cmap[mask]
+#  Load Dataset
+train_dataset = KittiDataset(
+    image_dir="/kaggle/input/kittiroadsegmentation/training/image_2",
+    mask_dir="/kaggle/input/kittiroadsegmentation/training/gt_image_2",
+    transform=transform
+)
+print(train_dataset.__len__())
+train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
 ```
 
 
@@ -69,34 +118,11 @@ validation: 1024x2048
 |  Model          | Batch Size  | FLOPs  | train/val OS   |  mIoU        | Dropbox  |  Tencent Weiyun  |
 | :--------        | :-------------: | :----:   | :-----------: | :--------: | :--------: |  :----:   |
 | DeepLabV3Plus-MobileNet   | 16      |  135G      |  16/16   |  0.721  |    [Download](https://www.dropbox.com/s/753ojyvsh3vdjol/best_deeplabv3plus_mobilenet_cityscapes_os16.pth?dl=0) | [Download](https://share.weiyun.com/aSKjdpbL) 
-#### Segmentation Results on Pascal VOC2012 (DeepLabv3Plus-MobileNet)
+
+#### Segmentation Results on Kitti Road Dataset (DeepLabv3Plus-MobileNet)
 
 <div>
-<img src="samples/1_image.png"   width="20%">
-<img src="samples/1_target.png"  width="20%">
-<img src="samples/1_pred.png"    width="20%">
-<img src="samples/1_overlay.png" width="20%">
-</div>
-
-<div>
-<img src="samples/23_image.png"   width="20%">
-<img src="samples/23_target.png"  width="20%">
-<img src="samples/23_pred.png"    width="20%">
-<img src="samples/23_overlay.png" width="20%">
-</div>
-
-<div>
-<img src="samples/114_image.png"   width="20%">
-<img src="samples/114_target.png"  width="20%">
-<img src="samples/114_pred.png"    width="20%">
-<img src="samples/114_overlay.png" width="20%">
-</div>
-
-#### Segmentation Results on Cityscapes (DeepLabv3Plus-MobileNet)
-
-<div>
-<img src="samples/city_1_target.png"   width="45%">
-<img src="samples/city_1_overlay.png"  width="45%">
+<img src="![image](https://github.com/user-attachments/assets/9f3a12f3-a4ea-4b26-bf78-d51d11d13f98)"   width="45%">
 </div>
 
 <div>
@@ -109,7 +135,7 @@ validation: 1024x2048
 
 #### 2.2  Kitti Road Segmentation (Recommended!!)
 
-The dataset comprises two main parts: a training set with annotated ground truth and a testing set for performance evaluation.
+The dataset comprises two main parts: a training set with annotated ground truth and a testing set for performance evaluation (https://www.cvlibs.net/download.php?file=data_road.zip).
 
 #### 1. **Data Composition** 
 
