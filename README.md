@@ -198,13 +198,6 @@ python main.py --model deeplabv3plus_mobilenet --dataset kitti_Road --enable_vis
 ![image](https://github.com/user-attachments/assets/68bad3a1-26e5-456c-b97e-e0e6feb84837)
 
 '''python 
-   ###############################################################################
-# Step 2: Load the Pretrained Swin-U-Net Model Architecture and Fine Tune
-###############################################################################
-# Note: The following is a simplified version of the Swin-U-Net architecture.
-# For a complete implementation, please refer to the provided notebook link.
-# The model below is adapted for segmentation on the KITTI Road Dataset.
-
 class SwinUnet(nn.Module):
     def __init__(self, img_size=256, in_chans=3, num_classes=2, embed_dim=96):
         super(SwinUnet, self).__init__()
