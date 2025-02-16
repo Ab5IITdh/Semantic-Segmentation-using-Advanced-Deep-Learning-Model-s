@@ -197,6 +197,59 @@ python main.py --model deeplabv3plus_mobilenet --dataset kitti_Road --enable_vis
 # 1. SWIN-Transformer_UNet Model Architecture-Pytorch  \
 ![image](https://github.com/user-attachments/assets/68bad3a1-26e5-456c-b97e-e0e6feb84837)
 
+'''python 
+   ###############################################################################
+# Step 2: Load the Pretrained Swin-U-Net Model Architecture and Fine Tune
+###############################################################################
+# Note: The following is a simplified version of the Swin-U-Net architecture.
+# For a complete implementation, please refer to the provided notebook link.
+# The model below is adapted for segmentation on the KITTI Road Dataset.
+
+class SwinUnet(nn.Module):
+    def __init__(self, img_size=256, in_chans=3, num_classes=2, embed_dim=96):
+        super(SwinUnet, self).__init__()
+        # A simplified encoder (mimicking a patch embedding + convolutional encoder).
+        self.encoder = nn.Sequential(
+            nn.Conv2d(in_chans, embed_dim, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(embed_dim),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2)  # Downsample by 2.
+        )
+        # A simple bottleneck block.
+        self.bottleneck = nn.Sequential(
+            nn.Conv2d(embed_dim, embed_dim*2, kernel_size=3, padding=1),
+            nn.BatchNorm2d(embed_dim*2),
+            nn.ReLU(inplace=True)
+        )
+        # A simplified decoder using transpose convolution for upsampling.
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(embed_dim*2, embed_dim, kernel_size=2, stride=2),
+            nn.BatchNorm2d(embed_dim),
+            nn.ReLU(inplace=True)
+        )
+        # Final segmentation head.
+        self.seg_head = nn.Conv2d(embed_dim, num_classes, kernel_size=1)
+
+    def forward(self, x):
+        enc = self.encoder(x)      # [B, embed_dim, H, W]
+        bottleneck = self.bottleneck(enc)  # [B, embed_dim*2, H, W]
+        dec = self.decoder(bottleneck)     # [B, embed_dim, 2*H, 2*W] (should match input resolution)
+        out = self.seg_head(dec)           # [B, num_classes, H, W]
+        return out
+'''
+
+# Instantiate the model.
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = SwinUnet(img_size=256, in_chans=3, num_classes=2, embed_dim=96).to(device)
+
+# Optionally load pretrained weights here if available.
+# For example:
+# model.load_state_dict(torch.load('path_to_pretrained_weights.pth'))
+
+# Set up optimizer and loss criterion.
+optimizer = optim.Adam(model.parameters(), lr=1e-4)
+criterion = nn.CrossEntropyLoss()  # Suitable for segmentation (expects targets as LongTensor)
+
 # Swin-Unet
 [ECCVW2022] The codes for the work "Swin-Unet: Unet-like Pure Transformer for Medical Image Segmentation"(https://arxiv.org/abs/2105.05537). Our paper has been accepted by ECCV 2022 MEDICAL COMPUTER VISION WORKSHOP (https://mcv-workshop.github.io/). We updated the Reproducibility. I hope this will help you to reproduce the results.\
 ![image](https://github.com/user-attachments/assets/2c0ee201-603f-4084-a2a1-3711a1d163ef)
