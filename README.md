@@ -196,8 +196,14 @@ python main.py --model deeplabv3plus_mobilenet --dataset kitti_Road --enable_vis
 
 # 1. SWIN-Transformer_UNet Model Architecture-Pytorch  \
 ![image](https://github.com/user-attachments/assets/68bad3a1-26e5-456c-b97e-e0e6feb84837)
+```python
+###############################################################################
+# Step 2: Load the Pretrained Swin-U-Net Model Architecture and Fine Tune
+###############################################################################
+# Note: The following is a simplified version of the Swin-U-Net architecture.
+# For a complete implementation, please refer to the provided notebook link.
+# The model below is adapted for segmentation on the KITTI Road Dataset.
 
-'''python 
 class SwinUnet(nn.Module):
     def __init__(self, img_size=256, in_chans=3, num_classes=2, embed_dim=96):
         super(SwinUnet, self).__init__()
@@ -229,7 +235,19 @@ class SwinUnet(nn.Module):
         dec = self.decoder(bottleneck)     # [B, embed_dim, 2*H, 2*W] (should match input resolution)
         out = self.seg_head(dec)           # [B, num_classes, H, W]
         return out
-'''
+
+# Instantiate the model.
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = SwinUnet(img_size=256, in_chans=3, num_classes=2, embed_dim=96).to(device)
+
+# Optionally load pretrained weights here if available.
+# For example:
+# model.load_state_dict(torch.load('path_to_pretrained_weights.pth'))
+
+# Set up optimizer and loss criterion.
+optimizer = optim.Adam(model.parameters(), lr=1e-4)
+criterion = nn.CrossEntropyLoss()  # Suitable for segmentation (expects targets as LongTensor)
+```
 
 # Instantiate the model.
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
