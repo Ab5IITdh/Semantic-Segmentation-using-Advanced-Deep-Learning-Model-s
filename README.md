@@ -287,7 +287,40 @@ sh train.sh or python train.py --dataset Synapse --cfg configs/swin_tiny_patch4_
 ```bash
 sh test.sh or python test.py --dataset Synapse --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --is_saveni --volume_path your DATA_DIR --output_dir your OUT_DIR --max_epoch 150 --base_lr 0.05 --img_size 224 --batch_size 24
 ```
+# Evaluate the model on the training set (as an example).
+```python
+model.eval()
+all_ious = []
+all_mean_iou = []
+all_pixel_acc = []
+all_mean_pixel_acc = []
 
+with torch.no_grad():
+    for images, masks in train_loader:
+        images = images.to(device)
+        masks = masks.to(device)
+        outputs = model(images)
+        preds = torch.argmax(outputs, dim=1)
+        for pred, mask in zip(preds, masks):
+            ious, mean_iou, pix_acc, mean_pix_acc = compute_metrics(pred.cpu(), mask.cpu(), num_classes=2)
+            all_ious.append(ious)
+            all_mean_iou.append(mean_iou)
+            all_pixel_acc.append(pix_acc)
+            all_mean_pixel_acc.append(mean_pix_acc)
+
+avg_ious = np.nanmean(all_ious, axis=0)
+avg_mean_iou = np.nanmean(all_mean_iou)
+avg_pixel_acc = np.mean(all_pixel_acc)
+avg_mean_pixel_acc = np.nanmean(all_mean_pixel_acc)
+
+print("\nEvaluation Metrics on Training Set:")
+for cls in range(2):
+    print(f"Class {cls} IoU: {avg_ious[cls]:.4f}")
+print(f"Mean IoU: {avg_mean_iou:.4f}")
+print(f"Pixel Accuracy: {avg_pixel_acc:.4f}")
+print(f"Mean Pixel Accuracy: {avg_mean_pixel_acc:.4f}")
+```
+![image](https://github.com/user-attachments/assets/7d4123cb-efe7-4e99-98f0-ab674294c2ef)
 
 ## Reference
 
