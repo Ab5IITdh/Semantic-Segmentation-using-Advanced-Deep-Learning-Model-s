@@ -194,8 +194,43 @@ The careful naming of files in the dataset supports easy pairing between images 
 python main.py --model deeplabv3plus_mobilenet --dataset kitti_Road --enable_vis --vis_port 28333 --gpu_id 0  --lr 0.1  --crop_size 768 --batch_size 16 --output_stride 16 --data_root ./datasets/data/kitti_road 
 ```
 
+# 1. SWIN-Transformer_UNet Model Architecture-Pytorch  \
+![image](https://github.com/user-attachments/assets/68bad3a1-26e5-456c-b97e-e0e6feb84837)
+
+# Swin-Unet
+[ECCVW2022] The codes for the work "Swin-Unet: Unet-like Pure Transformer for Medical Image Segmentation"(https://arxiv.org/abs/2105.05537). Our paper has been accepted by ECCV 2022 MEDICAL COMPUTER VISION WORKSHOP (https://mcv-workshop.github.io/). We updated the Reproducibility. I hope this will help you to reproduce the results.\
+![image](https://github.com/user-attachments/assets/2c0ee201-603f-4084-a2a1-3711a1d163ef)
+
+## 1. Download pre-trained swin transformer model (Swin-T)
+* [Get pre-trained model in this link] (https://drive.google.com/drive/folders/1UC3XOoezeum0uck4KBVGa8osahs6rKUY?usp=sharing): Put pretrained Swin-T into folder "pretrained_ckpt/"
+
+## 3. Environment
+
+- Please prepare an environment with python=3.7, and then use the command "pip install -r requirements.txt" for the dependencies.
+
+## 4. Train/Test
+
+- Run the train script on Kitti Road Semantic Segmentation dataset. The batch size we used is 24. If you do not have enough GPU memory, the bacth size can be reduced to 12 or 6 to save memory.
+
+- Train
+
+```bash
+sh train.sh or python train.py --dataset Synapse --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --root_path your DATA_DIR --max_epochs 150 --output_dir your OUT_DIR  --img_size 224 --base_lr 0.05 --batch_size 24
+```
+
+- Test 
+
+```bash
+sh test.sh or python test.py --dataset Synapse --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --is_saveni --volume_path your DATA_DIR --output_dir your OUT_DIR --max_epoch 150 --base_lr 0.05 --img_size 224 --batch_size 24
+```
+
+
 ## Reference
 
 [1] [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)
 
 [2] [Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1802.02611)
+
+[3] [TransUnet](https://github.com/Beckschen/TransUNet)
+
+[4] [SwinTransformer](https://github.com/microsoft/Swin-Transformer)
