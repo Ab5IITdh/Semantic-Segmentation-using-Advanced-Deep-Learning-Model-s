@@ -287,7 +287,7 @@ sh train.sh or python train.py --dataset Synapse --cfg configs/swin_tiny_patch4_
 ```bash
 sh test.sh or python test.py --dataset Synapse --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --is_saveni --volume_path your DATA_DIR --output_dir your OUT_DIR --max_epoch 150 --base_lr 0.05 --img_size 224 --batch_size 24
 ```
-# Evaluate the model on the training set (as an example).
+## 5. Evaluate the model on the training set (as an example).
 ```python
 model.eval()
 all_ious = []
